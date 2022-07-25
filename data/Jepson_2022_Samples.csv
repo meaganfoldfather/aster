@@ -1,0 +1,68 @@
+﻿group,sp,id,tran,dist,trt,side,loc,date_processed,initials,ic,iw,vs,is,ih,bh,vw,notes_trait
+A,cal,1,T1,1,NR,L,L3,05.05.2022,EHS,0,0,0,0,0,0,0,
+A,cal,1,T1,2,NR,L,L2,05.05.2022,EHS,0,0,0,0,11.8 cm,0,0.012 g,
+A,cal,2,home,0,NR,R,L1,06.03.2022,EGN,0,0,0,0,1.1 cm,0,0.839 mg,vw - used microscale
+A,cal,3,home,0,NR,R,L4,06.03.2022,EGN,1,13.842 mg,35,58,12.9 cm,0,0.019 g,
+A,cal,4,T2,2,NR,R,L2,05.05.2022,EHS,1,0.880 mg,0,7,2.9 cm,0,1.197 mg,vw - used microscale
+A,cal,5,T2,0.5,C,L,L2,06.03.2022,EGN,0,0,0,0,6.7 cm,0,0.005 g,
+A,fre,1,T1,1,NR,L,L4,06.03.2022,EGN,0,0,0,0,3.9 cm,0,1.262 mg,vw - used microscale
+A,fre,1,T1,2,NR,L,L3,06.03.2022,EGN,0,0,0,0,0.9 cm,0,0.180 mg,vw - used microscale
+A,fre,3,T1,1,NR,R,L4,05.05.2022,EGN,0,0,0,0,1.3 cm,0,0.468 mg,vw - used microscale
+A,fre,3,T2,2,NR,L,L3,05.05.2022,EGN,0,0,0,0,1.4 cm,0,0.179 mg,vw - used microscale
+A,fre,4,T1,1,NR,L,L1,05.05.2022,EGN,1,2.711 mg,3,13,3.5 cm,0,3.331 mg,vw - used microscale
+A,fre,4,T1,1,NR,R,L3,05.05.2022,EHS,1,4.704 mg,5,32,3.4 cm,0,0.008 g,
+A,fre,4,T1,2,C,R,L1,06.03.2022,EGN,1,2.680 mg,14,10,3.3 cm,0,0.002 g,
+A,fre,5,T2,0.5,NR,L,L1,05.05.2022,EGN,1,0.340 mg,0,1,2.8 cm,0,0.769 mg,vw - used microscale
+B,cal,3,T1,0.5,C,L,L1,06.03.2022,EGN,0,0,0,0,4.1 cm,0,2.296 mg,vw - used microscale
+B,cal,3,T2,0.5,NR,R,L3,06.03.2022,EGN,1,3.785 mg,6,46,8.2 cm,0,0.004 g,
+B,cal,3,T2,2,NR,L,L1,06.03.2022,EGN,1,7.366 mg,39,36,10.0 cm,0,0.012 g,
+B,cal,5,home,0,NR,R,L1,05.11.2022,EHS,1,1.243 mg,1,15,4.0 cm,0,1.736 mg,vw - used microscale
+B,cal,5,T2,1,NR,L,L2,05.11.2022,EHS,1,1.340 mg,0,9,5.3 cm,0,1.902 mg,vw - used microscale
+B,cal,6,T2,0.5,C,L,L2,06.03.2022,EGN,1,1.365 mg,0,12,4.5 cm,0,0.002 g,
+B,fre,6,home,0,NR,L,L2,06.03.2022,EGN,0,0,0,0,4.5 cm,0,7.775 mg,vw - used microscale
+B,gla,2,T1,0.5,NR,R,L1,06.03.2022,EGN,0,0,0,0,2.1 cm,0,1.452 mg,vw - used microscale
+B,gla,2,T1,0.5,C,L,L3,05.11.2022,EHS,0,0,0,0,2.9 cm,0,0.002 g,
+B,gla,4,home,0,C,R,L1,06.03.2022,EGN,0,0,0,0,3.1 cm,0,8.518 mg,vw - used microscale
+B,gla,4,home,0,C,R,L2,06.03.2022,EGN,0,0,0,0,6.6 cm,0,0.014 g,
+C,cal,2,T1,2,C,R,L3,06.02.2022,EGN,1,1.520 mg,9,6,3.3 cm,0,1.680 mg,vw - used microscale
+C,cal,2,T2,0.5,NR,R,L1,06.02.2022,EGN,0,0,0,0,1.1 cm,0,0.379 mg,vw - used microscale
+C,cal,4,T2,2,NR,R,L4,05.11.2022,EHS,0,0,0,0,1.2 cm,0,1.285 mg,vw - used microscale
+C,fre,4,T2,1,NR,R,L1,05.05.2022,EGN,0,0,0,0,0.75 cm,0,0.681 mg,vw - used microscale
+C,fre,5,T2,1,NR,L,L1,05.11.2022,EHS,1,1.586 mg,0,13,5.3 cm,0,0.001 g,
+C,fre,5,T2,2,C,R,L4,05.11.2022,EHS,0,0,0,0,0,0,0,
+D,fre,2,T1,0.5,C,L,L2,06.03.2022,EGN,0,0,0,0,1.5 cm,0,0.175 mg,vw - used microscale
+D,fre,2,T1,2,C,R,L2,06.03.2022,EGN,4,66.066 mg,480,50,9.8 cm,"9.0 cm, 8.5 cm, 3.5 cm",0.047 g,
+D,fre,2,T1,2,C,R,L4,06.02.2022,EGN,1,2.397 mg,11,4,4.0 cm,0,5.609 mg,vw - used microscale
+D,fre,3,T1,1,NR,L,L3,06.03.2022,EGN,0,0,0,0,1.6 cm,0,2.403 mg,vw - used microscale
+D,fre,4,T1,1,NR,L,L3,06.03.2022,EGN,0,0,0,0,0,0,0,
+D,fre,6,T2,0.5,NR,L,L3,06.03.2022,EGN,0,0,0,0,3.3 cm,0,1.045 mg,vw - used microscale
+E,cal,3,T2,2,C,L,L2,05.05.2022,EGN,1,0.711 mg,2,4,2.65 cm,0,0.869 mg,vw - used microscale
+E,cal,4,T2,0.5,NR,R,L1,05.05.2022,MFO,0,0,0,0,0.9 cm,0,0.288 mg,vw - used microscale
+E,fre,3,T1,0.5,NR,L,L4,06.01.2022,EGN,1,3.361 mg,27,0,5.2 cm,0,4.797 mg,vw - used microscale
+E,fre,3,T1,2,NR,R,L4,06.01.2022,EGN,0,0,0,0,1.3 cm,0,0.640 mg,vw - used microscale
+E,fre,3,T2,1,NR,R,L4,06.01.2022,EGN,0,0,0,0,0,0,0,
+E,fre,5,T2,0.5,NR,R,L3,06.01.2022,EGN,0,0,0,0,2.9 cm,0,2.618 mg,vw - used microscale
+F,cal,2,T2,0.5,NR,L,L4,05.05.2022,EHS,0,0,0,0,9.1 cm,0,0.012 g,
+F,cal,5,T1,0.5,NR,L,L4,06.02.2022,EGN,1,0.588 mg,1,4,2.6 cm,0,1.140 mg,vw - used microscale
+F,cal,5,T1,0.5,NR,L,L2,06.02.2022,EGN,0,0,0,0,1.6 cm,0,0.539 mg,vw - used microscale
+F,cal,5,T1,1,NR,R,L1,06.02.2022,EGN,1,0.311 mg,0,1,3.6 cm,0,0.689 mg,vw - used microscale
+F,cal,5,T2,0.5,C,L,L4,05.05.2022,EGN,1,0.946 mg,1,7,3.9 cm,0,1.540 mg,vw - used microscale
+F,cal,6,T1,0.5,NR,L,L4,04.28.2022,MFO,1,0.803 mg,0,9,3.6 cm,0,0.962 mg,vw - used microscale
+F,cal,6,T1,2,NR,L,L1,06.02.2022,EGN,1,0.629 mg,0,2,3.4 cm,0,1.646 mg,vw - used microscale
+F,fre,2,T1,0.5,C,R,L3,05.05.2022,EHS,0,0,0,0,2.1 cm,0,2.090 mg,vw - used microscale
+F,fre,3,T1,2,NR,L,L4,06.01.2022,EGN,0,0,0,0,3.3 cm,0,1.473 mg,vw - used microscale
+F,fre,3,T2,2,NR,R,L3,06.01.2022,EGN,0,0,0,0,1.9 cm,0,0.482 mg,vw - used microscale
+F,fre,6,T1,2,NR,R,L3,05.05.2022,EHS,0,0,0,0,0.9 cm,0,0.382 mg,vw - used microscale
+G,cal,1,home,0,NR,R,L3,06.01.2022,EGN,1,1.420 mg,0,15,6.7 cm,0,1.906 mg,vw - used microscale
+G,fre,2,T1,2,C,R,L1,06.01.2022,EGN,1,11.217 mg,9,60,7.5 cm,0,0.013 g,
+G,fre,2,T1,2,NR,L,L3,05.05.2022,EHS,1,8.165 mg,35,72,6.1 cm,0,0.013 g,
+G,fre,3,home,0,C,L,L4,06.02.2022,EGN,1,8.314 mg,79,46,9.3 cm,0,0.005 g,
+G,fre,3,T1,0.5,NR,R,L2,06.02.2022,EGN,2,36.862 mg,280,35,10.6 cm,8.7 cm,0.046 g,
+G,fre,3,T2,0.5,NR,L,L2,06.01.2022,EGN,1,1.978 mg,9,15,5.6 cm,0,2.249 mg,vw - used microscale
+H,cal,2,T2,2,NR,L,L4,06.02.2022,EGN,1,1.490 mg,10,3,7.3 cm,0,2.262 mg,vw - used microscale
+H,cal,3,T1,2,NR,L,L1,06.02.2022,EGN,1,0.605 mg,0,6,1.4 cm,0,0.699 mg,vw - used microscale
+H,fre,2,T2,1,NR,L,L2,06.01.2022,EGN,0,0,0,0,6.5 cm,0,4.416 mg,vw - used microscale
+H,fre,3,T1,0.5,C,L,L4,06.02.2022,EGN,1,9.816 mg,65,35,9.5 cm,0,0.012 g,
+H,fre,3,T1,2,NR,R,L1,06.02.2022,EGN,1,12.562 mg,55,44,7.1 cm,0,0.012 g,
+H,fre,3,T2,2,NR,R,L1,06.01.2022,EGN,1,2.263 mg,3,20,5.2 cm,0,3.312 mg,vw - used microscale
+H,fre,4,T2,1,NR,L,L2,06.01.2022,EGN,0,0,0,0,0,0,0,
