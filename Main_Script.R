@@ -4,6 +4,7 @@
 # libraries
 library(aster)
 library(tidyverse)
+library(cowplot)
 
 # Bring in 2018 experimental & maternal data #
 # experimental
@@ -227,23 +228,80 @@ summary(aster_gla_null, show.graph=TRUE)
 anova(aster_gla_null, aster_gla_vw) # interaction supported
 
 ##############################################################
-# Try to make predictions from the models
+# Try to make predictions from the models - bases on no RE models - estimates are very different....
 aster_cal_noRE <- aster(resp ~ vars + fit:(trt + year + vw * dist),
                    pred, fam, vars, id, root, data = fitness_maternal[fitness_maternal$sp == "cal",])
-summary(aster_cal_noRE) # why is this not working
+summary(aster_cal_noRE) 
 preds <- predict(aster_cal_noRE,varvar = vars, idvar = id, root = root,
     newdata = fitness_maternal[fitness_maternal$sp == "cal",], se.fit = TRUE)
-preds # how to interpet the $fit values?
-
+# new_data_cal <- as.data.frame(expand.grid(vars = unique(fitness_maternal$vars), trt = unique(fitness_maternal$trt), year = unique(fitness_maternal$year), dist = unique(fitness_maternal$dist), vw = seq(min(fitness_maternal[fitness_maternal$sp == "cal", "vw"]), max(fitness_maternal[fitness_maternal$sp == "cal", "vw"]), by = .001)))
+# new_data_cal$fit <- as.numeric(new_data_cal$vars == "vs")
+  
+preds <- predict(aster_cal_noRE, varvar = vars, idvar = id, root = root,
+    newdata = new_data_cal, se.fit = TRUE)
+preds # how to best interpret the $fit values?
 
 cal_data <- fitness_maternal[fitness_maternal$sp == "cal",]
 cal_data$preds <- preds$fit 
 cal_data$pred.se <- preds$se.fit 
 cal_data
 
-cal_summaries <-
-  cal_data %>% 
-  group_by(dist) %>% 
-  summarise(fit = mean(preds), se = mean(pred.se))
-cal_summaries
+plot_cal <-
+cal_data %>% 
+  ggplot(aes(vw, preds, col = as.factor(dist))) + 
+  geom_smooth(method = "lm", se = F) + 
+  theme_classic()+
+  scale_color_viridis_d()+
+  xlab("Maternal Vegetation Weight")+
+  ylab("Predicted Fitness")+
+  ggtitle("L. cal")
+plot_cal
+
+#######
+aster_fre_noRE <- aster(resp ~ vars + fit:(trt + year + vw * dist),
+                   pred, fam, vars, id, root, data = fitness_maternal[fitness_maternal$sp == "fre",])
+summary(aster_fre_noRE) 
+preds <- predict(aster_fre_noRE,varvar = vars, idvar = id, root = root,
+    newdata = fitness_maternal[fitness_maternal$sp == "fre",], se.fit = TRUE)
+
+fre_data <- fitness_maternal[fitness_maternal$sp == "fre",]
+fre_data$preds <- preds$fit 
+fre_data$pred.se <- preds$se.fit 
+fre_data
+
+plot_fre<-
+  fre_data %>% 
+  ggplot(aes(vw, preds, col = as.factor(dist))) + 
+  geom_smooth(method = "lm", se = F) + 
+  theme_classic()+
+  scale_color_viridis_d()+
+  xlab("Maternal Vegetation Weight")+
+  ylab("Predicted Fitness")+
+  ggtitle("L. fre")
+plot_fre
+
+###########
+aster_gla_noRE <- aster(resp ~ vars + fit:(trt + vw * dist),
+                   pred, fam, vars, id, root, data = fitness_maternal[fitness_maternal$sp == "gla",])
+summary(aster_gla_noRE) # issue with this model if year included - removed
+preds <- predict(aster_gla_noRE,varvar = vars, idvar = id, root = root,
+    newdata = fitness_maternal[fitness_maternal$sp == "gla",], se.fit = TRUE)
+
+gla_data <- fitness_maternal[fitness_maternal$sp == "gla",]
+gla_data$preds <- preds$fit 
+gla_data$pred.se <- preds$se.fit 
+gla_data
+
+plot_gla <-
+gla_data %>% 
+  ggplot(aes(vw, preds, col = as.factor(dist))) + 
+ geom_smooth(method = "lm", se = F) + 
+  theme_classic()+
+  scale_color_viridis_d()+
+  xlab("Maternal Vegetation Weight")+
+  ylab("Predicted Fitness")+
+  ggtitle("L. gla")
+plot_gla
+
+plot_grid(plot_cal, plot_fre, plot_gla, nrow = 1)
 
