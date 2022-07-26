@@ -39,5 +39,12 @@ maternal_analysis %>%
   theme_classic()+
   ylim(0,0.1)
 
+
+maternal_analysis %>% 
+  ggplot(aes(year, vw, group = mom, color = sp))+ 
+  geom_line()+
+  facet_wrap(.~sp)
+
+
   
 
