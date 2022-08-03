@@ -4,6 +4,12 @@ source("Main_Script.R")
 # dataframe with all maternal veg data
 maternal
 
+# Temporal variability in suitability relative the overall spatial variation 
+# Is this the same for seed count and veg weight? Means different things for different species
+# Negative/positive correlation in habitat values between years? 
+
+# add in 2020 maternal collections to this analyses?
+
 wide_maternal <- 
  maternal %>% 
 pivot_wider(id_cols = mom, names_from = year, values_from = vw)
@@ -46,5 +52,14 @@ maternal_analysis %>%
   facet_wrap(.~sp)
 
 
+# Spatial variabilty 
+#Within year variability for all moms within a site, seed set, veg weight? Are those two correlated?
+
+# Temporal variabilty
+# Same mom through time
+
+# Hydrologic variability 
+# soil moisture data; need some soil conversions for comparisons across species
+# CV didn't appear different between species (from Courtney)
   
 

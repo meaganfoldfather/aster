@@ -111,28 +111,28 @@ re_data$id  <- as.integer(re_data$id)
 ###########################################
 # Aster models looking for an effect of distance, seperated by species
 # Lasthenia californica model
-aster_cal <- reaster(resp ~ vars + fit:(trt + year+dist),
+aster_cal <- reaster(resp ~ vars + fit:(year+trt+dist),
                    list(group = ~ 0 + fit:group,
                         mom = ~ 0 + fit:mom),
                    pred, fam, vars, id, root, data = re_data[re_data$sp == "cal",])
 summary(aster_cal, show.graph=TRUE)
-# distance has a non-significant negative effect, NR has a significant positive effect, years 2019 and 2022 have significantly lower fitness
+# distance has a non-significant negative effect, NR has a significant positive effect, years 2019 and 2022 have significantly lower fitness (if include interaction between trt and dist. neither dist not trt is significant)
 
 # Lasthenia fremontii model
-aster_fre <- reaster(resp ~ vars + fit:(trt + year + dist),
+aster_fre <- reaster(resp ~ vars + fit:(year + trt + dist),
                    list(group = ~ 0 + fit:group,
                         mom = ~ 0 + fit:mom),
                    pred, fam, vars, id, root, data = re_data[re_data$sp == "fre",])
 summary(aster_fre, show.graph=TRUE)
-# distance has a non-significant positive effect, NR has a significant positive effect, years 2019 and 2022 have significantly lower fitness
+# distance has a non-significant positive effect, NR has a significant positive effect, years 2019 and 2022 have significantly lower fitness (if include interaction between trt and dist. neither dist not trt is significant)
 
 # Lasthenia glaberrima model
-aster_gla <- reaster(resp ~ vars + fit:(trt + year + dist),
+aster_gla <- reaster(resp ~ vars + fit:(year + trt + dist),
                    list(group = ~ 0 + fit:group,
                         mom = ~ 0 + fit:mom),
                    pred, fam, vars, id, root, data = re_data[re_data$sp == "gla",])
 summary(aster_gla, show.graph=TRUE)
-# distance has a non-significant negative effect, NR has a significant positive effect, no effect of year
+# distance has a non-significant negative effect, NR has a significant positive effect, no effect of year (if include interaction between trt and dist. the positive effect of NR is reduced by dispersing farther distances)
 
 ##################### 
 # Modify maternal data so years match up 
@@ -178,6 +178,11 @@ maternal %>%
   geom_boxplot()+
   theme_bw()
 
+maternal <-
+maternal %>% 
+  group_by(year) %>% 
+  mutate(year_vw = round(mean(vw, na.rm = T),3))
+
 # join fitness and maternal data together
 fitness_maternal <- left_join(re_data, maternal, by = c("mom", "year"))
 fitness_maternal
@@ -189,39 +194,39 @@ fitness_maternal %>%
 #########################################################
 # Aster models including maternal vw, seperated by species
 # Lasthenia californica model
-aster_cal_vw <- reaster(resp ~ vars + fit:(trt + year + vw * dist),
+aster_cal_vw <- reaster(resp ~ vars + fit:(year + trt * vw * dist),
                    list(group = ~ 0 + fit:group),
                    pred, fam, vars, id, root, data = fitness_maternal[fitness_maternal$sp == "cal",])
 summary(aster_cal_vw, show.graph=TRUE)
-# positive effect of NR, fitness lower in 2019, 2022, positive effect of vw, no additive or interactive effect of dist 
+# positive effect of NR, fitness lower in 2019, 2022, positive effect of vw, no additive or interactive effect of dist (same if used average year vw) (if 3-way trt*vw*dist interaction included nothing beyond year, trt significant)
 
-aster_cal_null <- reaster(resp ~ vars + fit:(trt + year + vw + dist),
+aster_cal_null <- reaster(resp ~ vars + fit:(trt + year + vw * dist),
                    list(group = ~ 0 + fit:group),
                    pred, fam, vars, id, root, data = fitness_maternal[fitness_maternal$sp == "cal",])
 summary(aster_cal_null, show.graph=TRUE)
-anova(aster_cal_null, aster_cal_vw) # interaction not supported
+anova(aster_cal_null, aster_cal_vw) # interaction not supported with trt or vw with dist
 
 # Lasthenia fremontii model
-aster_fre_vw <- reaster(resp ~ vars + fit:(trt + year + vw * dist),
+aster_fre_vw <- reaster(resp ~ vars + fit:(year + trt * vw * dist),
                    list(group = ~ 0 + fit:group),
                    pred, fam, vars, id, root, data = fitness_maternal[fitness_maternal$sp == "fre",])
 summary(aster_fre_vw, show.graph=TRUE)
-# positive effect of NR, fitness lower in 2019, 2022, significant interaction between vw and dist --> If your mom is big and you are far away, you have higher fitness--> if your mom was small and you are close by, you have higher fitness
+# positive effect of NR, fitness lower in 2019, 2022, significant interaction between vw and dist --> If your mom is big and you are far away, you have higher fitness--> if your mom was small and you are close by, you have higher fitness (this effect of dist is gone if use year averages of maternal vw) (if 3-way trt*vw*dist interaction included everything is significant!)
 
-aster_fre_null <- reaster(resp ~ vars + fit:(trt + year + vw + dist),
+aster_fre_null <- reaster(resp ~ vars + fit:(year + trt + vw * dist),
                    list(group = ~ 0 + fit:group),
                    pred, fam, vars, id, root, data = fitness_maternal[fitness_maternal$sp == "fre",])
 summary(aster_fre_null, show.graph=TRUE)
 anova(aster_fre_null, aster_fre_vw) # interaction supported
 
 # Lasthenia glaberrima model
-aster_gla_vw <- reaster(resp ~ vars + fit:(trt + year + vw * dist),
+aster_gla_vw <- reaster(resp ~ vars + fit:(year + trt * vw * dist),
                    list(group = ~ 0 + fit:group),
                    pred, fam, vars, id, root, data = fitness_maternal[fitness_maternal$sp == "gla",])
 summary(aster_gla_vw, show.graph=TRUE)
-# positive effect of NR, no effect of year, positive effect of vw, non-significant positive effect of dist --> the positive effect of a big mom is washed out farther away; no direct effect of distance
+# positive effect of NR, no effect of year, positive effect of vw, non-significant positive effect of dist --> the positive effect of a big mom is washed out farther away; no direct effect of distance (this effect of dist is gone if use year averages of maternal vw)(3-way interaction model will not converge)
 
-aster_gla_null <- reaster(resp ~ vars + fit:(trt + year + vw + dist),
+aster_gla_null <- reaster(resp ~ vars + fit:(year + trt + vw * dist),
                    list(group = ~ 0 + fit:group),
                    pred, fam, vars, id, root, data = fitness_maternal[fitness_maternal$sp == "gla",])
 summary(aster_gla_null, show.graph=TRUE)
@@ -229,8 +234,12 @@ anova(aster_gla_null, aster_gla_vw) # interaction supported
 
 ##############################################################
 # Try to make predictions from the models - bases on no RE models - estimates are very different....
-aster_cal_noRE <- aster(resp ~ vars + fit:(trt + year + vw * dist),
+aster_cal_noRE <- aster(resp ~ vars + fit:(year + trt+ vw * dist),
                    pred, fam, vars, id, root, data = fitness_maternal[fitness_maternal$sp == "cal",])
+
+#aster_cal_noRE <- aster(resp ~ vars + fit:(year + vw * dist),
+                   #pred, fam, vars, id, root, data = fitness_maternal[fitness_maternal$sp == "cal" & #fitness_maternal$trt == "C",])
+
 summary(aster_cal_noRE) 
 preds <- predict(aster_cal_noRE,varvar = vars, idvar = id, root = root,
     newdata = fitness_maternal[fitness_maternal$sp == "cal",], se.fit = TRUE)
@@ -255,11 +264,16 @@ cal_data %>%
   xlab("Maternal Vegetation Weight")+
   ylab("Predicted Fitness")+
   ggtitle("L. cal")
+#  facet_grid(.~trt)
 plot_cal
 
 #######
-aster_fre_noRE <- aster(resp ~ vars + fit:(trt + year + vw * dist),
+aster_fre_noRE <- aster(resp ~ vars + fit:(year + trt + vw * dist),
                    pred, fam, vars, id, root, data = fitness_maternal[fitness_maternal$sp == "fre",])
+
+# aster_fre_noRE <- aster(resp ~ vars + fit:(year + vw * dist),
+#                    pred, fam, vars, id, root, data = fitness_maternal[fitness_maternal$sp == "fre" & fitness_maternal$trt == "C",])
+
 summary(aster_fre_noRE) 
 preds <- predict(aster_fre_noRE,varvar = vars, idvar = id, root = root,
     newdata = fitness_maternal[fitness_maternal$sp == "fre",], se.fit = TRUE)
@@ -278,11 +292,17 @@ plot_fre<-
   xlab("Maternal Vegetation Weight")+
   ylab("Predicted Fitness")+
   ggtitle("L. fre")
+#  facet_grid(.~trt)
 plot_fre
 
+
 ###########
-aster_gla_noRE <- aster(resp ~ vars + fit:(trt + vw * dist),
+aster_gla_noRE <- aster(resp ~ vars + fit:(trt + vw + dist),
                    pred, fam, vars, id, root, data = fitness_maternal[fitness_maternal$sp == "gla",])
+
+# aster_gla_noRE <- aster(resp ~ vars + fit:(vw * dist),
+#                    pred, fam, vars, id, root, data = fitness_maternal[fitness_maternal$sp == "gla" & fitness_maternal$trt == "C",])
+
 summary(aster_gla_noRE) # issue with this model if year included - removed
 preds <- predict(aster_gla_noRE,varvar = vars, idvar = id, root = root,
     newdata = fitness_maternal[fitness_maternal$sp == "gla",], se.fit = TRUE)
@@ -301,6 +321,7 @@ gla_data %>%
   xlab("Maternal Vegetation Weight")+
   ylab("Predicted Fitness")+
   ggtitle("L. gla")
+#  facet_grid(.~trt)
 plot_gla
 
 plot_grid(plot_cal, plot_fre, plot_gla, nrow = 1)
