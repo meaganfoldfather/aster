@@ -5,6 +5,7 @@
 library(aster)
 library(tidyverse)
 library(cowplot)
+library(emmeans)
 
 # Bring in 2018 experimental & maternal data #
 # experimental
@@ -222,13 +223,13 @@ summary(aster_fre_null, show.graph=TRUE)
 anova(aster_fre_null, aster_fre_vw) # interaction supported
 
 # Lasthenia glaberrima model
-aster_gla_vw <- reaster(resp ~ vars + fit:(year + trt * vw * dist),
+aster_gla_vw <- reaster(resp ~ vars + fit:(trt * vw * dist),
                    list(group = ~ 0 + fit:group),
                    pred, fam, vars, id, root, data = fitness_maternal[fitness_maternal$sp == "gla",])
 summary(aster_gla_vw, show.graph=TRUE)
-# positive effect of NR, no effect of year, positive effect of vw, non-significant positive effect of dist --> the positive effect of a big mom is washed out farther away; no direct effect of distance (this effect of dist is gone if use year averages of maternal vw)(3-way interaction model will not converge)
+# positive effect of NR, no effect of year, positive effect of vw, non-significant positive effect of dist --> the positive effect of a big mom is washed out farther away; no direct effect of distance (this effect of dist is gone if use year averages of maternal vw)(3-way interaction model will not converge, unless year is removed) --> then just a positive effect of distance, confusing
 
-aster_gla_null <- reaster(resp ~ vars + fit:(year + trt + vw * dist),
+aster_gla_null <- reaster(resp ~ vars + fit:(trt + vw * dist),
                    list(group = ~ 0 + fit:group),
                    pred, fam, vars, id, root, data = fitness_maternal[fitness_maternal$sp == "gla",])
 summary(aster_gla_null, show.graph=TRUE)
@@ -327,3 +328,89 @@ plot_gla
 
 plot_grid(plot_cal, plot_fre, plot_gla, nrow = 1)
 
+###############
+#Make Figures that have dispersal distance on the x-axis model fits split by large and small maternal size
+# cal
+cal_data
+plot(density(cal_data$vw))
+quantile(cal_data$vw)# median is 0.02
+
+cal_data$size <- "Little"
+cal_data[cal_data$vw > 0.02, "size"] <- "Big"
+
+cal_data %>% 
+  ggplot(aes(dist, preds, col = as.factor(size), fill = as.factor(size))) + 
+  #geom_point()+
+  geom_smooth(method = "lm", se = T, lty = "dashed") + 
+  theme_classic()+
+  scale_color_viridis_d()+
+  scale_fill_viridis_d()+
+  xlab("Distance")+
+  ylab("Predicted Fitness")+
+  ggtitle("L. cal")+
+  facet_grid(.~trt)
+
+cal_data %>% 
+  ggplot(aes(dist, preds, col = as.factor(trt), fill = as.factor(trt))) + 
+  #geom_point()+
+  geom_smooth(method = "lm", se = F, lty = "dashed") + 
+  theme_classic()+
+  scale_color_viridis_d()+
+  scale_fill_viridis_d()+
+  xlab("Distance")+
+  ylab("Predicted Fitness")+
+  ggtitle("L. cal")+
+  facet_grid(.~size)
+
+# fre
+fre_data
+plot(density(fre_data$vw))
+quantile(fre_data$vw)# median is 0.023
+
+fre_data$size <- "Little"
+fre_data[fre_data$vw > 0.023, "size"] <- "Big"
+
+fre_data %>% 
+  ggplot(aes(dist, preds, col = as.factor(size), fill = as.factor(size))) + 
+  #geom_point()+
+  geom_smooth(method = "lm", se = T) + 
+  theme_classic()+
+  scale_color_viridis_d()+
+  scale_fill_viridis_d()+
+  xlab("Distance")+
+  ylab("Predicted Fitness")+
+  ggtitle("L. fre")+
+  facet_grid(.~trt)
+
+fre_data %>% 
+  ggplot(aes(dist, preds, col = as.factor(trt), fill = as.factor(trt))) + 
+  #geom_point()+
+  geom_smooth(method = "lm", se = T) + 
+  theme_classic()+
+  scale_color_viridis_d()+
+  scale_fill_viridis_d()+
+  xlab("Distance")+
+  ylab("Predicted Fitness")+
+  ggtitle("L. fre")+
+  facet_grid(.~size)
+  
+# gla
+gla_data
+plot(density(gla_data$vw))
+quantile(gla_data$vw)# median is 0.029
+
+gla_data$size <- "Little"
+gla_data[gla_data$vw > 0.029, "size"] <- "Big"
+
+gla_data %>% 
+  ggplot(aes(dist, preds, col = as.factor(size),  fill = as.factor(size))) + 
+  #geom_point()+
+  geom_smooth(method = "lm", se = T,) + 
+  theme_classic()+
+  scale_color_viridis_d()+
+  scale_fill_viridis_d()+
+  xlab("Distance")+
+  ylab("Predicted Fitness")+
+  ggtitle("L. gla")
+  #facet_grid(.~trt)
+  #ylim(0,1)
