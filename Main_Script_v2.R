@@ -2,6 +2,7 @@
 # Will need to bring in fitness data for both experimental individuals and maternal plants for all three years of the experiment 
 
 # libraries
+library(aster)
 library(aster2)
 library(tidyverse)
 library(cowplot)
@@ -248,10 +249,10 @@ cal_data[cal_data$vw < 0.013, "size"] <- "Small Maternal Plant"
 cal_data$size <- as.factor(cal_data$size)
 cal_data$size <- factor(cal_data$size, levels = c( "Small Maternal Plant","Average Maternal Plant", "Large Maternal Plant"))
 
-cal_data %>% 
+cal_fitness_plot<-cal_data %>% 
   ggplot(aes(dist, preds, col = as.factor(size), fill = as.factor(size))) + 
   #geom_point()+
-  geom_smooth(method = "lm", se = T, lty = "dashed") + 
+  geom_smooth(method = "lm", se = T, alpha = .3) + 
   theme_classic()+
   scale_color_viridis_d(option = "E")+
   scale_fill_viridis_d(option = "E")+
@@ -314,10 +315,10 @@ fre_data$size <- factor(fre_data$size, levels = c( "Small Maternal Plant","Avera
 #fre_data$size <- "Small Maternal Plant"
 #fre_data[fre_data$vw > 0.023, "size"] <- "Large Maternal Plant"
 
-fre_data %>% 
+fre_fitness_plot <- fre_data %>% 
   ggplot(aes(dist, preds, col = as.factor(size), fill = as.factor(size))) + 
   #geom_point()+
-  geom_smooth(method = "lm", se = T) + 
+  geom_smooth(method = "lm", se = T, alpha = 0.3) + 
   theme_classic()+
   scale_color_viridis_d(option = "E")+
   scale_fill_viridis_d(option = "E")+
@@ -326,7 +327,6 @@ fre_data %>%
   ggtitle(expression(italic("Lasthenia fremontii")))+
   facet_grid(.~trt)+
   theme(legend.title=element_blank(), text = element_text(size = 16))
-
 
 # Lasthenia glaberrima model
 aster_gla_vw <- reaster(resp ~ vars + fit:(vw * trt * dist),
@@ -374,10 +374,10 @@ gla_data$size <- factor(gla_data$size, levels = c( "Small Maternal Plant","Avera
 #gla_data$size <- "Small Maternal Plant"
 #gla_data[gla_data$vw > 0.029, "size"] <- "Large Maternal Plant"
 
-gla_data %>% 
+gla_fitness_plot <- gla_data %>% 
   ggplot(aes(dist, preds, col = as.factor(size),  fill = as.factor(size))) + 
   #geom_point()+
-  geom_smooth(method = "lm", se = T) + 
+  geom_smooth(method = "lm", se = T, alpha = 0.3) + 
   theme_classic()+
   scale_color_viridis_d(option = "E")+
   scale_fill_viridis_d(option = "E")+
@@ -387,15 +387,17 @@ gla_data %>%
   facet_grid(.~trt)+
   theme(legend.title=element_blank(), text = element_text(size = 16))
 
-gla_data %>% 
-  ggplot(aes(dist, preds, col = as.factor(size),  fill = as.factor(size))) + 
-  #geom_point()+
-  geom_smooth(data = gla_data[gla_data$size == "Average Maternal Plant",],method = "lm", se = T) + 
-  theme_classic()+
-  scale_color_viridis_d(option = "E")+
-  scale_fill_viridis_d(option = "E")+
-  xlab("Distance")+
-  ylab("Predicted Fitness")+
-  ggtitle(expression(italic("Lasthenia glaberrima")))+
-  facet_grid(.~trt)+
-  theme(legend.title=element_blank(), text = element_text(size = 16))
+library(cowplot)
+all <-plot_grid(cal_fitness_plot, fre_fitness_plot, gla_fitness_plot)
+
+all_fitness_plot <- plot_grid(
+  cal_fitness_plot + theme(legend.position="none"),
+  fre_fitness_plot + theme(legend.position="none"),
+  gla_fitness_plot + theme(legend.position="none"),
+  get_legend(cal_fitness_plot + theme(legend.text=element_text(size=20))),
+  labels = c("A", "B", "C"),
+  hjust = -1,
+  nrow = 2
+)
+ggsave2(filename = "figures/fitness_preds_allSp.jpeg", all_fitness_plot)
+
