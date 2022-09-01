@@ -202,14 +202,71 @@ aster_cal_vw <- reaster(resp ~ vars + fit:(year + trt * vw * dist),
 summary(aster_cal_vw, show.graph=TRUE)
 # positive effect of NR, fitness lower in 2019, 2022, positive effect of vw, no additive or interactive effect of dist (same if used average year vw) (if 3-way trt*vw*dist interaction included nothing beyond year, trt significant)
 
-aster_cal_null <- reaster(resp ~ vars + fit:(trt + year + vw * dist),
+aster_cal_null_trt <- reaster(resp ~ vars + fit:(year + trt + vw * dist),
                    list(group = ~ 0 + fit:group),
                    pred, fam, vars, id, root, data = fitness_maternal[fitness_maternal$sp == "cal",])
-summary(aster_cal_null, show.graph=TRUE)
-anova(aster_cal_null, aster_cal_vw) # interaction not supported with trt or vw with dist
+summary(aster_cal_null_trt, show.graph=TRUE)
+
+aster_cal_null_vw <- reaster(resp ~ vars + fit:(year + vw + trt * dist),
+                   list(group = ~ 0 + fit:group),
+                   pred, fam, vars, id, root, data = fitness_maternal[fitness_maternal$sp == "cal",])
+summary(aster_cal_null_vw, show.graph=TRUE)
+
+aster_cal_null_both <- reaster(resp ~ vars + fit:(year + vw*trt + trt * dist + vw*dist),
+                   list(group = ~ 0 + fit:group),
+                   pred, fam, vars, id, root, data = fitness_maternal[fitness_maternal$sp == "cal",])
+summary(aster_cal_null_both, show.graph=TRUE)
+
+
+anova(aster_cal_null_trt, aster_cal_vw) # interaction not supported 
+anova(aster_cal_null_vw, aster_cal_vw) # interaction not supported 
+anova(aster_cal_null_vw, aster_cal_vw) # interaction not supported 
+
+# updated_cal_model <- reaster(resp ~ vars + fit:(year + trt + vw + dist),
+#                    list(group = ~ 0 + fit:group),
+#                    pred, fam, vars, id, root, data = fitness_maternal[fitness_maternal$sp == "cal",])
+# summary(updated_cal_model, show.graph=TRUE)
 
 aout <- aster_cal_vw$obj
-predict.aster(aout)
+# aout <- updated_cal_model$obj
+# create new data
+preds <- predict.aster(aout, model.type = "conditional", is.always.parameter = F, parm.type = "mean.value", newdata = fitness_maternal[fitness_maternal$sp == "cal",])
+
+cal_data <- fitness_maternal[fitness_maternal$sp == "cal",]
+cal_data$preds <- preds
+
+cal_data
+plot(density(cal_data$vw))
+quantile(cal_data$vw)# median is 0.02
+
+#cal_data$size <- "Small Maternal Plant"
+#cal_data[cal_data$vw > 0.02, "size"] <- "Large Maternal Plant"
+
+cal_data$size <- "Average Maternal Plant"
+cal_data[cal_data$vw > 0.034, "size"] <- "Large Maternal Plant"
+cal_data[cal_data$vw < 0.013, "size"] <- "Small Maternal Plant"
+cal_data$size <- as.factor(cal_data$size)
+cal_data$size <- factor(cal_data$size, levels = c( "Small Maternal Plant","Average Maternal Plant", "Large Maternal Plant"))
+
+cal_data %>% 
+  ggplot(aes(dist, preds, col = as.factor(size), fill = as.factor(size))) + 
+  #geom_point()+
+  geom_smooth(method = "lm", se = T, lty = "dashed") + 
+  theme_classic()+
+  scale_color_viridis_d(option = "E")+
+  scale_fill_viridis_d(option = "E")+
+  xlab("Distance")+
+  ylab("Predicted Fitness")+
+  ggtitle(expression(italic("Lasthenia californica")))+
+  facet_grid(.~trt)+
+  theme(legend.title=element_blank(), text = element_text(size = 16))
+
+# new_data_cal <- as.data.frame(expand.grid(vars = unique(fitness_maternal$vars), trt = unique(fitness_maternal$trt), year = unique(fitness_maternal$year), dist = unique(fitness_maternal$dist), vw = seq(min(fitness_maternal[fitness_maternal$sp == "cal", "vw"]), max(fitness_maternal[fitness_maternal$sp == "cal", "vw"]), by = .001)))
+# new_data_cal$fit <- as.numeric(new_data_cal$vars == "vs")
+# cal_data <- fitness_maternal[fitness_maternal$sp == "cal",]
+# cal_data$preds <- preds$fit 
+# cal_data$pred.se <- preds$se.fit 
+# cal_data
 
 # Lasthenia fremontii model
 aster_fre_vw <- reaster(resp ~ vars + fit:(year + trt * vw * dist),
@@ -218,202 +275,127 @@ aster_fre_vw <- reaster(resp ~ vars + fit:(year + trt * vw * dist),
 summary(aster_fre_vw, show.graph=TRUE)
 # positive effect of NR, fitness lower in 2019, 2022, significant interaction between vw and dist --> If your mom is big and you are far away, you have higher fitness--> if your mom was small and you are close by, you have higher fitness (this effect of dist is gone if use year averages of maternal vw) (if 3-way trt*vw*dist interaction included everything is significant! with both maternal vw as well)
 
-aster_fre_null <- reaster(resp ~ vars + fit:(year + trt + vw * dist),
+aster_fre_null_trt <- reaster(resp ~ vars + fit:(year + trt + vw * dist),
                    list(group = ~ 0 + fit:group),
                    pred, fam, vars, id, root, data = fitness_maternal[fitness_maternal$sp == "fre",])
-summary(aster_fre_null, show.graph=TRUE)
-anova(aster_fre_null, aster_fre_vw) # interaction supported
+summary(aster_fre_null_trt, show.graph=TRUE)
 
-# Lasthenia glaberrima model
-aster_gla_vw <- reaster(resp ~ vars + fit:(trt * vw * dist),
+aster_fre_null_vw <- reaster(resp ~ vars + fit:(year + vw + trt * dist),
                    list(group = ~ 0 + fit:group),
-                   pred, fam, vars, id, root, data = fitness_maternal[fitness_maternal$sp == "gla",])
-summary(aster_gla_vw, show.graph=TRUE)
-# positive effect of NR, no effect of year, positive effect of vw, non-significant positive effect of dist --> the positive effect of a big mom is washed out farther away; no direct effect of distance (this effect of dist is gone if use year averages of maternal vw)(3-way interaction model will not converge, unless year is removed) --> then just a positive effect of distance, confusing
-
-aster_gla_null <- reaster(resp ~ vars + fit:(trt + vw * dist),
-                   list(group = ~ 0 + fit:group),
-                   pred, fam, vars, id, root, data = fitness_maternal[fitness_maternal$sp == "gla",])
-summary(aster_gla_null, show.graph=TRUE)
-anova(aster_gla_null, aster_gla_vw) # interaction supported
-
-##############################################################
-# Try to make predictions from the models - bases on no RE models - estimates are very different....
-aster_cal_noRE <- aster(resp ~ vars + fit:(year + trt* vw * dist),
-                   pred, fam, vars, id, root, data = fitness_maternal[fitness_maternal$sp == "cal",])
-
-#aster_cal_noRE <- aster(resp ~ vars + fit:(year + vw * dist),
-                   #pred, fam, vars, id, root, data = fitness_maternal[fitness_maternal$sp == "cal" & #fitness_maternal$trt == "C",])
-
-summary(aster_cal_noRE) 
-preds <- predict(aster_cal_noRE,varvar = vars, idvar = id, root = root,
-    newdata = fitness_maternal[fitness_maternal$sp == "cal",], se.fit = TRUE)
-# new_data_cal <- as.data.frame(expand.grid(vars = unique(fitness_maternal$vars), trt = unique(fitness_maternal$trt), year = unique(fitness_maternal$year), dist = unique(fitness_maternal$dist), vw = seq(min(fitness_maternal[fitness_maternal$sp == "cal", "vw"]), max(fitness_maternal[fitness_maternal$sp == "cal", "vw"]), by = .001)))
-# new_data_cal$fit <- as.numeric(new_data_cal$vars == "vs")
-#preds <- predict(aster_cal_noRE, varvar = vars, idvar = id, root = root,
-#    newdata = new_data_cal, se.fit = TRUE)
-#preds # how to best interpret the $fit values?
-
-cal_data <- fitness_maternal[fitness_maternal$sp == "cal",]
-cal_data$preds <- preds$fit 
-cal_data$pred.se <- preds$se.fit 
-cal_data
-
-plot_cal <-
-cal_data %>% 
-  ggplot(aes(vw, preds, col = as.factor(dist))) + 
-  geom_point()+
-  geom_smooth(method = "lm", se = F) + 
-  theme_classic()+
-  scale_color_viridis_d()+
-  xlab("Maternal Vegetation Weight")+
-  ylab("Predicted Fitness")+
-  ggtitle("L. cal")+
-  facet_grid(.~trt)
-plot_cal
-
-#######
-aster_fre_noRE <- aster(resp ~ vars + fit:(year + trt * vw * dist),
                    pred, fam, vars, id, root, data = fitness_maternal[fitness_maternal$sp == "fre",])
+summary(aster_fre_null_vw, show.graph=TRUE)
 
-# aster_fre_noRE <- aster(resp ~ vars + fit:(year + vw * dist),
-#                    pred, fam, vars, id, root, data = fitness_maternal[fitness_maternal$sp == "fre" & fitness_maternal$trt == "C",])
+aster_fre_null_both <- reaster(resp ~ vars + fit:(year + vw*trt + trt * dist + vw*dist),
+                   list(group = ~ 0 + fit:group),
+                   pred, fam, vars, id, root, data = fitness_maternal[fitness_maternal$sp == "fre",])
+summary(aster_fre_null_both, show.graph=TRUE)
 
-summary(aster_fre_noRE) 
-preds <- predict(aster_fre_noRE,varvar = vars, idvar = id, root = root,
-    newdata = fitness_maternal[fitness_maternal$sp == "fre",], se.fit = TRUE)
+anova(aster_fre_null_trt, aster_fre_vw) # interaction supported
+anova(aster_fre_null_vw, aster_fre_vw) # interaction supported
+anova(aster_fre_null_both, aster_fre_vw) # interaction supported
+
+aout <- aster_fre_vw$obj
+preds <- predict.aster(aout, model.type = "conditional", is.always.parameter = F, parm.type = "mean.value", newdata = fitness_maternal[fitness_maternal$sp == "fre",])
 
 fre_data <- fitness_maternal[fitness_maternal$sp == "fre",]
-fre_data$preds <- preds$fit 
-fre_data$pred.se <- preds$se.fit 
-fre_data
-
-plot_fre<-
-  fre_data %>% 
-  ggplot(aes(vw, preds, col = as.factor(dist))) + 
-  geom_smooth(method = "lm", se = F) + 
-  theme_classic()+
-  scale_color_viridis_d()+
-  xlab("Maternal Vegetation Weight")+
-  ylab("Predicted Fitness")+
-  ggtitle("L. fre")+
-  facet_grid(.~trt)
-plot_fre
-
-
-###########
-aster_gla_noRE <- aster(resp ~ vars + fit:(trt * vw * dist),
-                   pred, fam, vars, id, root, data = fitness_maternal[fitness_maternal$sp == "gla",])
-
-# aster_gla_noRE <- aster(resp ~ vars + fit:(vw * dist),
-#                    pred, fam, vars, id, root, data = fitness_maternal[fitness_maternal$sp == "gla" & fitness_maternal$trt == "C",])
-
-summary(aster_gla_noRE) # issue with this model if year included - removed
-preds <- predict(aster_gla_noRE,varvar = vars, idvar = id, root = root,
-    newdata = fitness_maternal[fitness_maternal$sp == "gla",], se.fit = TRUE)
-
-gla_data <- fitness_maternal[fitness_maternal$sp == "gla",]
-gla_data$preds <- preds$fit 
-gla_data$pred.se <- preds$se.fit 
-gla_data
-
-plot_gla <-
-gla_data %>% 
-  ggplot(aes(vw, preds, col = as.factor(dist))) + 
- geom_smooth(method = "lm", se = F) + 
-  theme_classic()+
-  scale_color_viridis_d()+
-  xlab("Maternal Vegetation Weight")+
-  ylab("Predicted Fitness")+
-  ggtitle("L. gla")+
-  facet_grid(.~trt)
-plot_gla
-
-plot_grid(plot_cal, plot_fre, plot_gla, nrow = 1)
-
-###############
-#Make Figures that have dispersal distance on the x-axis model fits split by large and small maternal size
-# cal
-cal_data
-plot(density(cal_data$vw))
-quantile(cal_data$vw)# median is 0.02
-
-cal_data$size <- "Little"
-cal_data[cal_data$vw > 0.02, "size"] <- "Big"
-
-cal_data %>% 
-  ggplot(aes(dist, preds, col = as.factor(size), fill = as.factor(size))) + 
-  #geom_point()+
-  geom_smooth(method = "lm", se = T, lty = "dashed") + 
-  theme_classic()+
-  scale_color_viridis_d()+
-  scale_fill_viridis_d()+
-  xlab("Distance")+
-  ylab("Predicted Fitness")+
-  ggtitle("L. cal")+
-  facet_grid(.~trt)
-
-cal_data %>% 
-  ggplot(aes(dist, preds, col = as.factor(trt), fill = as.factor(trt))) + 
-  #geom_point()+
-  geom_smooth(method = "lm", se = F, lty = "dashed") + 
-  theme_classic()+
-  scale_color_viridis_d()+
-  scale_fill_viridis_d()+
-  xlab("Distance")+
-  ylab("Predicted Fitness")+
-  ggtitle("L. cal")+
-  facet_grid(.~size)
+fre_data$preds <- preds
 
 # fre
 fre_data
 plot(density(fre_data$vw))
 quantile(fre_data$vw)# median is 0.023
 
-fre_data$size <- "Little"
-fre_data[fre_data$vw > 0.023, "size"] <- "Big"
+fre_data$size <- "Average Maternal Plant"
+fre_data[fre_data$vw > 0.039, "size"] <- "Large Maternal Plant"
+fre_data[fre_data$vw < 0.012, "size"] <- "Small Maternal Plant"
+fre_data$size <- as.factor(fre_data$size)
+fre_data$size <- factor(fre_data$size, levels = c( "Small Maternal Plant","Average Maternal Plant", "Large Maternal Plant"))
+
+#fre_data$size <- "Small Maternal Plant"
+#fre_data[fre_data$vw > 0.023, "size"] <- "Large Maternal Plant"
 
 fre_data %>% 
   ggplot(aes(dist, preds, col = as.factor(size), fill = as.factor(size))) + 
   #geom_point()+
   geom_smooth(method = "lm", se = T) + 
   theme_classic()+
-  scale_color_viridis_d()+
-  scale_fill_viridis_d()+
+  scale_color_viridis_d(option = "E")+
+  scale_fill_viridis_d(option = "E")+
   xlab("Distance")+
   ylab("Predicted Fitness")+
-  ggtitle("L. fre")+
-  facet_grid(.~trt)
+  ggtitle(expression(italic("Lasthenia fremontii")))+
+  facet_grid(.~trt)+
+  theme(legend.title=element_blank(), text = element_text(size = 16))
 
-fre_data %>% 
-  ggplot(aes(dist, preds, col = as.factor(trt), fill = as.factor(trt))) + 
-  #geom_point()+
-  geom_smooth(method = "lm", se = T) + 
-  theme_classic()+
-  scale_color_viridis_d()+
-  scale_fill_viridis_d()+
-  xlab("Distance")+
-  ylab("Predicted Fitness")+
-  ggtitle("L. fre")+
-  facet_grid(.~size)
-  
+
+# Lasthenia glaberrima model
+aster_gla_vw <- reaster(resp ~ vars + fit:(vw * trt * dist),
+                   list(group = ~ 0 + fit:group),
+                   pred, fam, vars, id, root, data = fitness_maternal[fitness_maternal$sp == "gla",])
+summary(aster_gla_vw, show.graph=TRUE)
+# positive effect of NR, no effect of year, positive effect of vw, non-significant positive effect of dist --> the positive effect of a big mom is washed out farther away; no direct effect of distance (this effect of dist is gone if use year averages of maternal vw)(3-way interaction model will not converge, unless year is removed) --> then just a positive effect of distance, confusing - always bad to disperse far away, except when it may not matter if very large in control plots
+
+aster_gla_null_trt <- reaster(resp ~ vars + fit:(trt + vw * dist),
+                   list(group = ~ 0 + fit:group),
+                   pred, fam, vars, id, root, data = fitness_maternal[fitness_maternal$sp == "gla",])
+summary(aster_gla_null_trt, show.graph=TRUE)
+
+aster_gla_null_vw <- reaster(resp ~ vars + fit:(vw + trt * dist),
+                   list(group = ~ 0 + fit:group),
+                   pred, fam, vars, id, root, data = fitness_maternal[fitness_maternal$sp == "gla",])
+summary(aster_gla_null_vw, show.graph=TRUE)
+
+aster_gla_null_both <- reaster(resp ~ vars + fit:(vw*trt + trt * dist + vw*dist),
+                   list(group = ~ 0 + fit:group),
+                   pred, fam, vars, id, root, data = fitness_maternal[fitness_maternal$sp == "gla",])
+summary(aster_gla_null_both, show.graph=TRUE)
+
+anova(aster_gla_null_trt, aster_gla_vw) # interaction supported
+anova(aster_gla_null_vw, aster_gla_vw) # interaction supported
+anova(aster_gla_null_both, aster_gla_vw) # 3-way interaction not supported
+
+aout <- aster_gla_vw$obj
+preds <- predict.aster(aout, model.type = "conditional", is.always.parameter = F, parm.type = "mean.value", newdata = fitness_maternal[fitness_maternal$sp == "gla",])
+
+gla_data <- fitness_maternal[fitness_maternal$sp == "gla",]
+gla_data$preds <- preds
+
 # gla
 gla_data
 plot(density(gla_data$vw))
 quantile(gla_data$vw)# median is 0.029
 
-gla_data$size <- "Little"
-gla_data[gla_data$vw > 0.029, "size"] <- "Big"
+gla_data$size <- "Average Maternal Plant"
+gla_data[gla_data$vw > 0.039, "size"] <- "Large Maternal Plant"
+gla_data[gla_data$vw < 0.012, "size"] <- "Small Maternal Plant"
+gla_data$size <- as.factor(gla_data$size)
+gla_data$size <- factor(gla_data$size, levels = c( "Small Maternal Plant","Average Maternal Plant", "Large Maternal Plant"))
+
+#gla_data$size <- "Small Maternal Plant"
+#gla_data[gla_data$vw > 0.029, "size"] <- "Large Maternal Plant"
 
 gla_data %>% 
   ggplot(aes(dist, preds, col = as.factor(size),  fill = as.factor(size))) + 
   #geom_point()+
-  geom_smooth(method = "lm", se = T,) + 
+  geom_smooth(method = "lm", se = T) + 
   theme_classic()+
-  scale_color_viridis_d()+
-  scale_fill_viridis_d()+
+  scale_color_viridis_d(option = "E")+
+  scale_fill_viridis_d(option = "E")+
   xlab("Distance")+
   ylab("Predicted Fitness")+
-  ggtitle("L. gla")
-  #facet_grid(.~trt)
-  #ylim(0,1)
+  ggtitle(expression(italic("Lasthenia glaberrima")))+
+  facet_grid(.~trt)+
+  theme(legend.title=element_blank(), text = element_text(size = 16))
+
+gla_data %>% 
+  ggplot(aes(dist, preds, col = as.factor(size),  fill = as.factor(size))) + 
+  #geom_point()+
+  geom_smooth(data = gla_data[gla_data$size == "Average Maternal Plant",],method = "lm", se = T) + 
+  theme_classic()+
+  scale_color_viridis_d(option = "E")+
+  scale_fill_viridis_d(option = "E")+
+  xlab("Distance")+
+  ylab("Predicted Fitness")+
+  ggtitle(expression(italic("Lasthenia glaberrima")))+
+  facet_grid(.~trt)+
+  theme(legend.title=element_blank(), text = element_text(size = 16))
